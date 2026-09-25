@@ -10,6 +10,7 @@ import psutil
 import time
 import tkinter as tk
 from collections import deque
+from queue import Queue
 from PIL import Image, ImageTk
 
 
@@ -23,14 +24,41 @@ open_popups = deque()
 root = tk.Tk()
 root.withdraw()
 
-def on_press(key, injected):
+popup_queue = Queue()
+txt = ""
+
+
+def process_popup_queue():
+    while not popup_queue.empty():
+        event = popup_queue.get()
+        if event is True:
+            show_popup()
+    root.after(50, process_popup_queue)
+
+
+def on_press(key):
+    global txt
     try:
-        print('{}'.format(key.char))
+        txt += '{}'.format(key.char)
+        print(txt)
+        if len(txt) > 25:
+            txt = txt[1:]
+
+        lower_txt = txt.lower()
+        match lower_txt:
+            case _ if "sam" in lower_txt or "pulles" in lower_txt:
+                popup_queue.put(True)
+                print("PULLES IS WATCHING YOU!")
+                txt = ""
+            case _ if "jayden" in lower_txt:
+                popup_queue.put(True)
+                print("JAYDEN IS WATCHING YOU!")
+                txt = ""
     except AttributeError:
         print('special key {} pressed'.format(
             key))
 
-def on_release(key, injected):
+def on_release(key):
     if key == keyboard.Key.esc:
         # Stop listener
         return False
@@ -113,10 +141,11 @@ def show_popup():
     popup.protocol("WM_DELETE_WINDOW", close_popup)
     popup.after(2000, close_popup)
 
+root.after(50, process_popup_queue)
 listener = keyboard.Listener(
     on_press=on_press,
     on_release=on_release)
+listener.daemon = True
 listener.start()
-time.sleep(1)
-print(listener)
-    
+root.mainloop()
+
