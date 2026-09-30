@@ -15,8 +15,12 @@ from PIL import Image, ImageTk
 
 
 
-IMAGE_PATH = r"C:\Users\robin\Documents\Remap\evil_pulles.png"
-SOUND_PATH = r"C:\Users\robin\Documents\Remap\PULLES_sound.wav"
+PULLES_PATH = r"C:\Users\robin\Documents\Remap\evil_pulles.png"
+WIJNGAARDEN_PATH = r"C:\Users\robin\Documents\Remap\Wijngaarden.png"
+SCHAEFER_PATH = r"C:\Users\robin\Documents\Remap\Schaefer.jpeg"
+JAYDEN_PATH = "C:\Users\robin\Documents\Remap\jayden.jpg"
+VINZ_PATH = r"C:\Users\robin\Documents\Remap\vinz.png"
+
 IMAGE_HEIGHT = int(1080 * 0.7)
 
 seen = set()
@@ -31,8 +35,8 @@ txt = ""
 def process_popup_queue():
     while not popup_queue.empty():
         event = popup_queue.get()
-        if event is True:
-            show_popup()
+        if isinstance(event, str):
+            show_popup(event)
     root.after(50, process_popup_queue)
 
 
@@ -40,20 +44,25 @@ def on_press(key):
     global txt
     try:
         txt += '{}'.format(key.char)
-        print(txt)
         if len(txt) > 25:
             txt = txt[1:]
 
         lower_txt = txt.lower()
-        match lower_txt:
-            case _ if "sam" in lower_txt or "pulles" in lower_txt:
-                popup_queue.put(True)
-                print("PULLES IS WATCHING YOU!")
-                txt = ""
-            case _ if "jayden" in lower_txt:
-                popup_queue.put(True)
-                print("JAYDEN IS WATCHING YOU!")
-                txt = ""
+        if "sam" in lower_txt or "pulles" in lower_txt:
+            popup_queue.put("pulles")
+            txt = ""
+        elif "jayden" in lower_txt or "burne" in lower_txt:
+            popup_queue.put("jayden")
+            txt = ""
+        elif "wijngaarden" in lower_txt or "marco" in lower_txt:
+            popup_queue.put("wijngaarden")
+            txt = ""
+        elif "schaefer" in lower_txt or "klaus" in lower_txt or "marten" in lower_txt:
+            popup_queue.put("schaefer")
+            txt = ""
+        elif "vinz" in lower_txt or "gielen" in lower_txt:
+            popup_queue.put("vinz")
+            txt = ""
     except AttributeError:
         print('special key {} pressed'.format(
             key))
@@ -62,12 +71,6 @@ def on_release(key):
     if key == keyboard.Key.esc:
         # Stop listener
         return False
-
-def play_loud_sound():
-    winsound.PlaySound(
-        SOUND_PATH,
-        winsound.SND_FILENAME | winsound.SND_ASYNC,
-    )
 
 
 def get_work_area():
@@ -81,7 +84,8 @@ def get_work_area():
     return work_area.left, work_area.top, work_area.right, work_area.bottom
 
 
-def show_popup():
+def show_popup(type_name):
+
     while open_popups and len(open_popups) >= 5:
         oldest_popup = open_popups.popleft()
         if oldest_popup.winfo_exists():
@@ -89,9 +93,22 @@ def show_popup():
 
     popup = tk.Toplevel(root)
     open_popups.append(popup)
-    popup.title("PULLES IS WATCHING YOU!")
-    threading.Thread(target=play_loud_sound, daemon=True).start()
+    popup.title(type_name.title())
     popup.resizable(False, False)
+
+    match type_name:
+        case "pulles":
+            IMAGE_PATH = PULLES_PATH
+        case "jayden":
+            IMAGE_PATH = JAYDEN_PATH
+        case "wijngaarden":
+            IMAGE_PATH = WIJNGAARDEN_PATH
+        case "schaefer":
+            IMAGE_PATH = SCHAEFER_PATH
+        case "vinz":
+            IMAGE_PATH = VINZ_PATH
+        case _:
+            IMAGE_PATH = PULLES_PATH
 
     with Image.open(IMAGE_PATH) as source_image:
         resized_image = source_image.resize(
@@ -102,13 +119,6 @@ def show_popup():
     image_label = tk.Label(popup, image=image)
     image_label.image = image
     image_label.pack()
-
-    text_label = tk.Label(
-        popup,
-        text="PULLES IS WATCHING YOU!",
-        font=("Aptos Display", 24, "bold"),
-    )
-    text_label.pack(pady=(12, 12))
 
     popup.update_idletasks()
     popup_width = image.width()
