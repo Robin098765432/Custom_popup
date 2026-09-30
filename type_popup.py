@@ -18,7 +18,7 @@ from PIL import Image, ImageTk
 PULLES_PATH = r"C:\Users\robin\Documents\Remap\evil_pulles.png"
 WIJNGAARDEN_PATH = r"C:\Users\robin\Documents\Remap\Wijngaarden.png"
 SCHAEFER_PATH = r"C:\Users\robin\Documents\Remap\Schaefer.jpeg"
-JAYDEN_PATH = r"C:\Users\robin\Documents\Remap\jayden.jpg"
+JAYDEN_PATH = r"C:\Users\robin\Documents\Remap\jayden.png"
 VINZ_PATH = r"C:\Users\robin\Documents\Remap\vinz.png"
 
 IMAGE_HEIGHT = int(1080 * 0.7)
