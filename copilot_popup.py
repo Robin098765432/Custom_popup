@@ -5,14 +5,16 @@ import winsound
 import tkinter as tk
 from collections import deque
 from ctypes import wintypes
+from pathlib import Path
 from queue import Queue
 
 from PIL import Image, ImageTk
 from pynput import keyboard
 
 
-IMAGE_PATH = r"C:\Users\robin\Documents\Remap\evil_pulles.png"
-SOUND_PATH = r"C:\Users\robin\Documents\Remap\PULLES_sound.wav"
+ASSET_DIR = Path(__file__).resolve().parent
+IMAGE_PATH = ASSET_DIR / "evil_pulles.png"
+SOUND_PATH = ASSET_DIR / "PULLES_sound.wav"
 IMAGE_HEIGHT = int(1080 * 0.7)
 COPILOT_VK_CODES = {0xC4, 0xB7}
 
@@ -26,7 +28,7 @@ copilot_key_down = False
 
 def play_loud_sound():
     winsound.PlaySound(
-        SOUND_PATH,
+        str(SOUND_PATH),
         winsound.SND_FILENAME | winsound.SND_ASYNC,
     )
 
